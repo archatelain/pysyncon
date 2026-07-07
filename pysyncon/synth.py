@@ -61,9 +61,9 @@ class Synth(BaseSynth, VanillaOptimMixin):
         Z1 : pandas.Series, shape (n, 1), optional
             Column vector giving the outcome variable values over time for the
             treated unit, by default None.
-        custom_V : numpy.ndarray, shape (c, c), optional
-            Provide a V matrix (using the notation of the Abadie, Diamond &
-            Hainmueller paper), the optimisation problem will only then be
+        custom_V : numpy.ndarray, shape (c,), optional
+            Provide a vector of the diagonal elements of V (using the notation of the
+            Abadie, Diamond & Hainmueller paper), the optimisation problem will only then be
             solved for the weight matrix W, by default None.
         optim_method : str, optional
             Optimisation method to use for the outer optimisation, can be
