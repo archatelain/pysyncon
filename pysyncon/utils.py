@@ -262,7 +262,8 @@ class PlaceboTest:
         treatment_time: Optional[int] = None,
         mspe_threshold: Optional[float] = None,
         exclude_units: Optional[list] = None,
-    ):
+        show_plot:Optional[bool] = True
+    )-> tuple[plt.figure.Figure, plt.axes.Axes]:
         """Plot the gaps between the treated unit and the synthetic control
         for each placebo test.
 
@@ -283,6 +284,8 @@ class PlaceboTest:
             This serves to exclude any non-treated units whose synthetic control
             had a poor pre-treatment match to the actual relative to how the
             actual treated unit matched pre-treatment.
+        show_plot : bool, optional
+            Whether to print the plot or not. By default True.
 
         Raises
         ------
@@ -307,12 +310,19 @@ class PlaceboTest:
         else:
             placebo_gaps = gaps[gaps.index.isin(time_period)]
 
-        plt.plot(placebo_gaps, color="black", alpha=0.1)
-        plt.plot(self.treated_gap, color="black", alpha=1.0)
+        fig, ax = plt.subplots()
+        ax.plot(placebo_gaps, color="black", alpha=0.1)
+        ax.plot(self.treated_gap, color="black", alpha=1.0)
         if treatment_time:
-            plt.axvline(x=treatment_time, ymin=0.05, ymax=0.95, linestyle="dashed")
-        plt.grid(grid)
-        plt.show()
+            ax.axvline(x=treatment_time, ymin=0.05, ymax=0.95, linestyle="dashed")
+        ax.grid(grid)
+
+        if show_plot:
+            plt.show()
+        else:
+            plt.close(fig)
+        
+        return fig, ax
 
     def pvalue(self, treatment_time: int) -> float:
         """Calculate p-value of Abadie et al's version of Fisher's

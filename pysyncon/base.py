@@ -48,6 +48,7 @@ class BaseSynth(metaclass=ABCMeta):
         Z0: Optional[pd.DataFrame] = None,
         Z1: Optional[pd.Series] = None,
         plot_args: Optional[dict[str, Any]] = None,
+        show_plot: Optional[bool] = True
     ) -> tuple[plt.figure.Figure, plt.axes.Axes]:
         """Plot the outcome variable over time for the treated unit and the
         synthetic control.
@@ -76,6 +77,8 @@ class BaseSynth(metaclass=ABCMeta):
                 "xlabel": "X-axis Label",
                 "ylabel": "Y-axis Label"
             }
+        show_plot : bool, optional
+            Whether to print the plot or not. By default True.
 
         Returns
         -------
@@ -114,7 +117,12 @@ class BaseSynth(metaclass=ABCMeta):
             ax.axvline(x=treatment_time, ymin=0.05, ymax=0.95, linestyle="dashed")
         ax.legend()
         ax.grid(grid)
-        plt.show()
+
+        if show_plot:
+            plt.show()
+        else:
+            plt.close(fig)
+        
         return fig, ax
 
     def _gaps(self, Z0: pd.DataFrame, Z1: pd.Series) -> pd.Series:
@@ -149,7 +157,8 @@ class BaseSynth(metaclass=ABCMeta):
         grid: bool = True,
         Z0: Optional[pd.DataFrame] = None,
         Z1: Optional[pd.Series] = None,
-    ) -> None:
+        show_plot: Optional[bool] = True
+    ) -> tuple[plt.figure.Figure, plt.axes.Axes]:
         """Plots the gap between the treated unit and the synthetic unit over
         time.
 
@@ -170,6 +179,8 @@ class BaseSynth(metaclass=ABCMeta):
         Z1 : pandas.Series, shape (n, 1), optional
             The matrix of the time series of the outcome variable for the treated unit.
             If no dataprep is set, then this must be supplied along with Z0, by default None.
+        show_plot : bool, optional
+            Whether to print the plot or not. By default True.
 
         Raises
         ------
@@ -184,12 +195,13 @@ class BaseSynth(metaclass=ABCMeta):
             raise ValueError("dataprep must be set or (Z0, Z1) must be set for plots.")
         if self.W is None:
             raise ValueError("No weight matrix available; fit data first.")
-
+        
+        fig, ax = plt.subplots()
         ts_gap = self._gaps(Z0=Z0, Z1=Z1)
-        plt.plot(ts_gap, color="black", linewidth=1)
+        ax.plot(ts_gap, color="black", linewidth=1)
         if self.dataprep is not None:
-            plt.ylabel(self.dataprep.dependent)
-        plt.hlines(
+            ax.set_ylabel(self.dataprep.dependent)
+        ax.hlines(
             y=0,
             xmin=min(ts_gap.index),
             xmax=max(ts_gap.index),
@@ -197,9 +209,15 @@ class BaseSynth(metaclass=ABCMeta):
             linestyle="dashed",
         )
         if treatment_time:
-            plt.axvline(x=treatment_time, ymin=0.05, ymax=0.95, linestyle="dashed")
-        plt.grid(grid)
-        plt.show()
+            ax.axvline(x=treatment_time, ymin=0.05, ymax=0.95, linestyle="dashed")
+        ax.grid(grid)
+
+        if show_plot:
+            plt.show()
+        else:
+            plt.close(fig)
+
+        return fig, ax
 
     def weights(self, round: int = 3, threshold: Optional[float] = None) -> pd.Series:
         """Return a ``pandas.Series`` of the weights for each control unit.
