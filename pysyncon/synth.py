@@ -404,7 +404,7 @@ class Synth(BaseSynth, VanillaOptimMixin):
                         f"significance level `alpha`={alpha}, either increase `alpha` "
                         "or use more pre-intervention time-periods."
                     )
-                all_time_periods = time_periods + list(pre_periods)
+                all_time_periods = list(time_periods) + list(pre_periods)
                 Z0, Z1 = dataprep.make_outcome_mats(time_period=all_time_periods)
             elif self.dataprep is not None:
                 X0, X1 = self.dataprep.make_covariate_mats()
@@ -416,7 +416,7 @@ class Synth(BaseSynth, VanillaOptimMixin):
                         f"significance level `alpha`={alpha}, either increase `alpha` "
                         "or use more pre-intervention time-periods."
                     )
-                all_time_periods = time_periods + list(pre_periods)
+                all_time_periods = list(time_periods) + list(pre_periods)
                 Z0, Z1 = self.dataprep.make_outcome_mats(time_period=all_time_periods)
             else:
                 if X0 is None or X1 is None or Z0 is None or Z1 is None:

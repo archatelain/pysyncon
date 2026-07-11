@@ -152,7 +152,7 @@ class ConformalInference:
                     f"({idx}/{n_periods}) Calculating confidence interval "
                     f"for time-period t={post_period}..."
                 )
-            new_time_range = pre_periods + [post_period]
+            new_time_range = list(pre_periods) + [post_period]
             Z0_new, Z1_new = Z0.loc[new_time_range], Z1.loc[new_time_range]
             Z1_post_orig = Z1_new.loc[post_period].item()
 
